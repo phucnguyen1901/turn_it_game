@@ -50,19 +50,30 @@ class Player extends SpriteComponent
     Set<Vector2> intersectionPoints,
     PositionComponent other,
   ) async {
+    int time = game.stopwatch.elapsedMilliseconds ~/ 1000;
+
+    if (time > 30) {
+      speed = 250;
+    }
     if (other is Score) {
       other.removeFromParent();
-      FlameAudio.play('collect.mp3', volume: 0.2);
-
+      FlameAudio.play('collect.mp3',
+          volume:
+              Provider.of<MainAppProvider>(game.buildContext!, listen: false)
+                  .effectVolume);
       game.circleBackground.createScore();
-      Provider.of<ScoreProvider>(game.buildContext!, listen: false)
+      Provider.of<MainAppProvider>(game.buildContext!, listen: false)
           .increaseScore();
     } else if (other is DangerousArea) {
-      FlameAudio.play('hit.mp3');
+      FlameAudio.play('hit.mp3',
+          volume:
+              Provider.of<MainAppProvider>(game.buildContext!, listen: false)
+                  .effectVolume);
       game.overlays.add('game-over');
       game.pauseEngine();
+      Provider.of<MainAppProvider>(game.buildContext!, listen: false)
+          .recordBestCore();
     } else {
-      int time = game.stopwatch.elapsedMilliseconds ~/ 1000;
       game.circleBackground.reCreateDangerousArea((time).toDouble());
       game.circleBackground.createMoreScore(time);
       var number = 0;

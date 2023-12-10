@@ -37,6 +37,7 @@ class MainGame extends FlameGame
       bgSize: size,
     );
     await add(circleBackground);
+    await Future.delayed(const Duration(seconds: 1));
     add(player);
   }
 
