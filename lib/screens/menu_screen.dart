@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:turn_it_game/configs/contants.dart';
 import 'package:turn_it_game/configs/device_size.dart';
+import 'package:turn_it_game/local_storage/local_storage.dart';
 import 'package:turn_it_game/providers/score_provider.dart';
 import 'package:turn_it_game/screens/menu_components.dart';
 
@@ -54,7 +55,7 @@ class _MenuScreenState extends State<MenuScreen> {
                   : Align(
                       alignment: Alignment.bottomCenter,
                       child: Transform.translate(
-                        offset: const Offset(0, -70),
+                        offset: const Offset(0, -50),
                         child: GestureDetector(
                             onTap: () {
                               setState(() {
@@ -73,8 +74,8 @@ class _MenuScreenState extends State<MenuScreen> {
 
   String displayTitle() {
     return switch (currentScreenState) {
-      ScreenState.menu => "RECORD 8",
-      ScreenState.playGame => "SCORE ${context.watch<ScoreProvider>().score}",
+      ScreenState.menu => "RECORD ${LocalStorage.getBestScore}",
+      ScreenState.playGame => context.watch<MainAppProvider>().textNewBestScore,
       ScreenState.settings => "SETTINGS",
       ScreenState.statistics => "STATISTICS",
       ScreenState.instruction => "INSTRUCTION"
@@ -84,21 +85,35 @@ class _MenuScreenState extends State<MenuScreen> {
   List<Widget> displayBody() {
     return switch (currentScreenState) {
       ScreenState.menu => [
-          ...MenuComponents.getMenuWidget(context, settingsNavigationFnc: () {
-            setState(() {
-              currentScreenState = ScreenState.settings;
-            });
-          }, playNavigationFnc: () {
-            setState(() {
-              currentScreenState = ScreenState.playGame;
-              Provider.of<ScoreProvider>(context, listen: false).resetScore();
-            });
-          }),
+          ...MenuComponents.getMenuWidget(
+            context,
+            settingsNavigationFnc: () {
+              setState(() {
+                currentScreenState = ScreenState.settings;
+              });
+            },
+            playNavigationFnc: () {
+              setState(() {
+                currentScreenState = ScreenState.playGame;
+                Provider.of<MainAppProvider>(context, listen: false).reset();
+              });
+            },
+            infoNavigationFnc: () {
+              setState(() {
+                currentScreenState = ScreenState.instruction;
+              });
+            },
+            statisticsNavigationFnc: () {
+              setState(() {
+                currentScreenState = ScreenState.statistics;
+              });
+            },
+          ),
         ],
       ScreenState.playGame => [MenuComponents.gameWidget(mounted)],
-      ScreenState.settings => [...MenuComponents.getSettingsWidget()],
-      ScreenState.statistics => [SizedBox()],
-      ScreenState.instruction => [SizedBox()]
+      ScreenState.settings => [MenuComponents.getSettingsWidget(context)],
+      ScreenState.statistics => [MenuComponents.getStatisticScreen(context)],
+      ScreenState.instruction => [MenuComponents.getInfoScreen()]
     };
   }
 }

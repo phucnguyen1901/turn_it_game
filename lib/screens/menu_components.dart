@@ -5,14 +5,18 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:turn_it_game/configs/contants.dart';
 import 'package:turn_it_game/configs/device_size.dart';
-import 'package:turn_it_game/main.dart';
+import 'package:turn_it_game/local_storage/local_storage.dart';
 import 'package:turn_it_game/providers/score_provider.dart';
 import 'package:turn_it_game/screens/game_screen/game_screen.dart';
 
 class MenuComponents {
-  static List<Widget> getMenuWidget(context,
-      {required VoidCallback settingsNavigationFnc,
-      required VoidCallback playNavigationFnc}) {
+  static List<Widget> getMenuWidget(
+    context, {
+    required VoidCallback settingsNavigationFnc,
+    required VoidCallback playNavigationFnc,
+    required VoidCallback infoNavigationFnc,
+    required VoidCallback statisticsNavigationFnc,
+  }) {
     return [
       Center(
         child: Transform.translate(
@@ -26,8 +30,11 @@ class MenuComponents {
       Center(
         child: Transform.translate(
           offset: const Offset(0, -180),
-          child: Image.asset(
-            PathContants.image('statistics_btn.png'),
+          child: GestureDetector(
+            onTap: statisticsNavigationFnc,
+            child: Image.asset(
+              PathContants.image('statistics_btn.png'),
+            ),
           ),
         ),
       ),
@@ -45,8 +52,11 @@ class MenuComponents {
       Center(
         child: Transform.translate(
           offset: const Offset(-120, -70),
-          child: Image.asset(
-            PathContants.image('info_btn.png'),
+          child: GestureDetector(
+            onTap: infoNavigationFnc,
+            child: Image.asset(
+              PathContants.image('info_btn.png'),
+            ),
           ),
         ),
       ),
@@ -64,67 +74,67 @@ class MenuComponents {
     ];
   }
 
-  static List<Widget> getSettingsWidget() {
-    return [
-      Center(
-        child: Transform.translate(
-          offset: const Offset(0, -70),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text("SOUND", style: textStyle.copyWith(color: Colors.white)),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  GestureDetector(
-                    onTap: () async {
-                      // print(
-                      //     " ollectPointAudio.play();${collectPointAudio.playing}");
-                      // if (collectPointAudio.playing) {
-                      //   await collectPointAudio.stop();
-                      // }
-                      // print(
-                      //     " ollectPointAudio.play()2;${collectPointAudio.playing}");
-                      // await collectPointAudio.();
-                    },
-                    child: Image.asset(
-                      PathContants.image('volume_up.png'),
-                    ),
+  static Widget getSettingsWidget(BuildContext context) {
+    return Center(
+      child: Transform.translate(
+        offset: const Offset(0, -70),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text("SOUND", style: textStyle.copyWith(color: Colors.white)),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                GestureDetector(
+                  onTap: () async {
+                    context.read<MainAppProvider>().setEffectVolume(0.1);
+                  },
+                  child: Image.asset(
+                    PathContants.image('volume_up.png'),
                   ),
-                  const SizedBox(width: 10),
-                  Image.asset(
+                ),
+                const SizedBox(width: 10),
+                GestureDetector(
+                  onTap: () async {
+                    context.read<MainAppProvider>().setEffectVolume(-0.1);
+                  },
+                  child: Image.asset(
                     PathContants.image('volume_down.png'),
-                  )
-                ],
-              ),
-              const SizedBox(height: 10),
-              Text("MUSIC", style: textStyle.copyWith(color: Colors.white)),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  GestureDetector(
-                    onTap: () {},
-                    child: Image.asset(
-                      PathContants.image('volume_up.png'),
-                    ),
                   ),
-                  const SizedBox(width: 10),
-                  GestureDetector(
-                    onTap: () {},
-                    child: Image.asset(
-                      PathContants.image('volume_down.png'),
-                    ),
-                  )
-                ],
-              )
-            ],
-          ),
+                )
+              ],
+            ),
+            const SizedBox(height: 10),
+            Text("MUSIC", style: textStyle.copyWith(color: Colors.white)),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    context.read<MainAppProvider>().setBGVolume(0.1);
+                  },
+                  child: Image.asset(
+                    PathContants.image('volume_up.png'),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                GestureDetector(
+                  onTap: () {
+                    context.read<MainAppProvider>().setBGVolume(-0.1);
+                  },
+                  child: Image.asset(
+                    PathContants.image('volume_down.png'),
+                  ),
+                )
+              ],
+            )
+          ],
         ),
-      )
-    ];
+      ),
+    );
   }
 
   static Widget gameWidget(bool mounted) {
@@ -133,27 +143,86 @@ class MenuComponents {
       gameFactory: MainGame.new,
       overlayBuilderMap: {
         "game-over": (context, MainGame gameRef) {
-          return Center(
-            child: Transform.translate(
-              offset: const Offset(0, -70),
-              child: GestureDetector(
-                onTap: () async {
-                  await gameRef.resetGame;
-                  if (mounted) {
-                    Provider.of<ScoreProvider>(context, listen: false)
-                        .resetScore();
-                  }
-                  gameRef.resumeEngine();
-                  gameRef.overlays.remove('game-over');
-                },
-                child: Image.asset(
-                  PathContants.image('play_btn.png'),
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Align(
+                alignment: Alignment.center,
+                child: Transform.translate(
+                  offset: const Offset(0, -50),
+                  child: GestureDetector(
+                    onTap: () async {
+                      await gameRef.resetGame;
+                      if (mounted) {
+                        Provider.of<MainAppProvider>(context, listen: false)
+                            .reset();
+                      }
+                      gameRef.resumeEngine();
+                      gameRef.overlays.remove('game-over');
+                    },
+                    child: Image.asset(
+                      PathContants.image('play_btn.png'),
+                    ),
+                  ),
                 ),
               ),
-            ),
+              Transform.translate(
+                offset: const Offset(0, 110),
+                child: Text(
+                  "GAME OVER",
+                  style: textStyle.copyWith(color: Colors.white),
+                ),
+              ),
+            ],
           );
         }
       },
+    );
+  }
+
+  static Widget getInfoScreen() {
+    return Align(
+      alignment: Alignment.bottomCenter,
+      child: Transform.translate(
+        offset: const Offset(0, -80),
+        child: Padding(
+          padding: const EdgeInsets.all(50.0),
+          child: Text("TAP LEFT OR RIGHT SIDE TO ROTATE THE CIRCLE",
+              textAlign: TextAlign.center,
+              style: textStyle.copyWith(color: Colors.white)),
+        ),
+      ),
+    );
+  }
+
+  static Widget getStatisticScreen(BuildContext context) {
+    return Center(
+      child: Transform.translate(
+        offset: const Offset(0, -80),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              LocalStorage.getBestScore.toString(),
+              style: textStyle.copyWith(fontSize: 64, color: Colors.white),
+            ),
+            Text(
+              "BEST SCORE",
+              style: textStyle.copyWith(fontSize: 20, color: Colors.white),
+            ),
+            const SizedBox(height: 10),
+            Text(
+              LocalStorage.timePlayed.toString(),
+              style: textStyle.copyWith(fontSize: 64, color: Colors.white),
+            ),
+            Text(
+              "TIMES PLAYED",
+              style: textStyle.copyWith(fontSize: 20, color: Colors.white),
+            )
+          ],
+        ),
+      ),
     );
   }
 }
