@@ -1,7 +1,7 @@
 import 'package:flame/collisions.dart';
 import 'package:flame_audio/flame_audio.dart';
 import 'package:provider/provider.dart';
-import 'package:turn_it_game/providers/score_provider.dart';
+import 'package:turn_it_game/providers/main_app_provider.dart';
 import 'package:turn_it_game/screens/game_screen/actors/dangerous_area.dart';
 import 'package:turn_it_game/screens/game_screen/game_screen.dart';
 import 'package:flame/components.dart';
