@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:turn_it_game/configs/contants.dart';
 import 'package:turn_it_game/configs/device_size.dart';
 import 'package:turn_it_game/local_storage/local_storage.dart';
-import 'package:turn_it_game/providers/score_provider.dart';
+import 'package:turn_it_game/providers/main_app_provider.dart';
 import 'package:turn_it_game/screens/game_screen/game_screen.dart';
 
 class MenuComponents {

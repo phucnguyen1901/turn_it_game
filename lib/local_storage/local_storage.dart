@@ -32,19 +32,16 @@ class LocalStorage {
 
   static int get timePlayed {
     int record = _prefs.getInt('time-played') ?? 0;
-    print("timePlayed:$record");
     return record;
   }
 
   static double get getBGVolume {
     double record = _prefs.getDouble('bg-volume') ?? 1;
-    print("bg volume:$record");
     return record;
   }
 
   static get getEffectVolume {
     double record = _prefs.getDouble('effect-volume') ?? 1;
-    print("effect volume:$record");
     return record;
   }
 

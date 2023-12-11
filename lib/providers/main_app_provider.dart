@@ -7,7 +7,6 @@ class MainAppProvider extends ChangeNotifier {
   int _score = 0;
 
   int get score => _score;
-  int timePlayed = 0;
 
   String textNewBestScore = "";
 
@@ -18,7 +17,6 @@ class MainAppProvider extends ChangeNotifier {
     _score = LocalStorage.getBestScore;
     bgVolume = LocalStorage.getBGVolume;
     effectVolume = LocalStorage.getEffectVolume;
-    timePlayed = LocalStorage.timePlayed;
   }
 
   void increaseScore() {
@@ -69,8 +67,7 @@ class MainAppProvider extends ChangeNotifier {
   }
 
   setTimePlayed() async {
-    timePlayed++;
-    await LocalStorage.setTimePlayed(timePlayed + 1);
+    await LocalStorage.setTimePlayed(LocalStorage.timePlayed + 1);
   }
 
   playBGMusic() {

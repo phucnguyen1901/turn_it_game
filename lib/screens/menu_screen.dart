@@ -4,7 +4,8 @@ import 'package:provider/provider.dart';
 import 'package:turn_it_game/configs/contants.dart';
 import 'package:turn_it_game/configs/device_size.dart';
 import 'package:turn_it_game/local_storage/local_storage.dart';
-import 'package:turn_it_game/providers/score_provider.dart';
+import 'package:turn_it_game/main.dart';
+import 'package:turn_it_game/providers/main_app_provider.dart';
 import 'package:turn_it_game/screens/menu_components.dart';
 
 class MenuScreen extends StatefulWidget {
@@ -14,8 +15,31 @@ class MenuScreen extends StatefulWidget {
   State<MenuScreen> createState() => _MenuScreenState();
 }
 
-class _MenuScreenState extends State<MenuScreen> {
+class _MenuScreenState extends State<MenuScreen> with WidgetsBindingObserver {
   ScreenState currentScreenState = ScreenState.menu;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    print("newState:$state");
+    if (state == AppLifecycleState.resumed) {
+      context.read<MainAppProvider>().playBGMusic();
+    } else if (state == AppLifecycleState.paused) {
+      soundTrackPlayer.stop();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
