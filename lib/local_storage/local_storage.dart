@@ -16,17 +16,16 @@ class LocalStorage {
     await _prefs.setInt('time-played', timePlayed);
   }
 
-  static Future<void> setBgVolume(double bgVolume) async {
-    await _prefs.setDouble('bg-volume', bgVolume);
+  static Future<void> setBgVolume(bool volume) async {
+    await _prefs.setBool('bg-volume', volume);
   }
 
-  static Future<void> setEffectVolume(double effectVolume) async {
-    await _prefs.setDouble('effect-volume', effectVolume);
+  static Future<void> setEffectVolume(bool effectVolume) async {
+    await _prefs.setBool('effect-volume', effectVolume);
   }
 
   static get getBestScore {
     int record = _prefs.getInt('record') ?? 0;
-    print("Record:$record");
     return record;
   }
 
@@ -35,13 +34,13 @@ class LocalStorage {
     return record;
   }
 
-  static double get getBGVolume {
-    double record = _prefs.getDouble('bg-volume') ?? 1;
+  static bool get getBGVolume {
+    bool record = _prefs.getBool('bg-volume') ?? true;
     return record;
   }
 
-  static get getEffectVolume {
-    double record = _prefs.getDouble('effect-volume') ?? 1;
+  static bool get getEffectVolume {
+    bool record = _prefs.getBool('effect-volume') ?? true;
     return record;
   }
 

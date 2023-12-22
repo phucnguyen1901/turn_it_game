@@ -89,19 +89,25 @@ class MenuComponents {
               children: [
                 GestureDetector(
                   onTap: () async {
-                    context.read<MainAppProvider>().setEffectVolume(0.1);
+                    context.read<MainAppProvider>().setEffectVolume(true);
                   },
                   child: Image.asset(
-                    PathContants.image('volume_up.png'),
+                    PathContants.image(
+                        context.watch<MainAppProvider>().effectVolume
+                            ? 'volume_up.png'
+                            : 'volume_up_grey.png'),
                   ),
                 ),
                 const SizedBox(width: 10),
                 GestureDetector(
                   onTap: () async {
-                    context.read<MainAppProvider>().setEffectVolume(-0.1);
+                    context.read<MainAppProvider>().setEffectVolume(false);
                   },
                   child: Image.asset(
-                    PathContants.image('volume_down.png'),
+                    PathContants.image(
+                        context.watch<MainAppProvider>().effectVolume
+                            ? 'volume_down_grey.png'
+                            : 'volume_down.png'),
                   ),
                 )
               ],
@@ -114,19 +120,25 @@ class MenuComponents {
               children: [
                 GestureDetector(
                   onTap: () {
-                    context.read<MainAppProvider>().setBGVolume(0.1);
+                    context.read<MainAppProvider>().playBGMusic();
                   },
                   child: Image.asset(
-                    PathContants.image('volume_up.png'),
+                    PathContants.image(
+                        context.watch<MainAppProvider>().musicVolume
+                            ? 'volume_up.png'
+                            : 'volume_up_grey.png'),
                   ),
                 ),
                 const SizedBox(width: 10),
                 GestureDetector(
                   onTap: () {
-                    context.read<MainAppProvider>().setBGVolume(-0.1);
+                    context.read<MainAppProvider>().stopBGMusic();
                   },
                   child: Image.asset(
-                    PathContants.image('volume_down.png'),
+                    PathContants.image(
+                        context.watch<MainAppProvider>().musicVolume
+                            ? 'volume_down_grey.png'
+                            : 'volume_down.png'),
                   ),
                 )
               ],

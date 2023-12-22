@@ -11,6 +11,7 @@ class MainGame extends FlameGame
   bool isTapRight = true;
   bool isTap = false;
   Stopwatch stopwatch = Stopwatch()..start();
+  final velocity = 1.5;
 
   late CircleBackground circleBackground;
   late Player player;
@@ -80,9 +81,9 @@ class MainGame extends FlameGame
   void update(double dt) {
     if (isTap) {
       if (isTapRight) {
-        circleBackground.angle += 3 * dt;
+        circleBackground.angle += velocity * dt;
       } else {
-        circleBackground.angle -= 3 * dt;
+        circleBackground.angle -= velocity * dt;
       }
     }
 

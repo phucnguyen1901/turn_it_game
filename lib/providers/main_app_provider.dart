@@ -10,13 +10,15 @@ class MainAppProvider extends ChangeNotifier {
 
   String textNewBestScore = "";
 
-  double effectVolume = 1;
-  double bgVolume = 1;
+  bool effectVolume = true;
+  bool musicVolume = true;
+
+  bool isFirstTimePlayBG = false;
 
   init() {
     _score = LocalStorage.getBestScore;
-    bgVolume = LocalStorage.getBGVolume;
     effectVolume = LocalStorage.getEffectVolume;
+    musicVolume = LocalStorage.getBGVolume;
   }
 
   void increaseScore() {
@@ -32,27 +34,10 @@ class MainAppProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  setBGVolume(double value) async {
-    bgVolume += value;
-    if (bgVolume <= 0) {
-      bgVolume = 0;
-    } else if (bgVolume >= 1) {
-      bgVolume = 1;
-    }
-
-    await soundTrackPlayer.setVolume(bgVolume);
-    await LocalStorage.setBgVolume(bgVolume);
-  }
-
-  setEffectVolume(double value) async {
-    effectVolume += value;
-    if (effectVolume <= 0) {
-      effectVolume = 0;
-    } else if (effectVolume >= 1) {
-      effectVolume = 1;
-    }
-    print("effect volume $effectVolume");
-    await LocalStorage.setEffectVolume(effectVolume);
+  setEffectVolume(bool value) async {
+    effectVolume = value;
+    await LocalStorage.setEffectVolume(value);
+    notifyListeners();
   }
 
   void recordBestCore() async {
@@ -70,10 +55,25 @@ class MainAppProvider extends ChangeNotifier {
     await LocalStorage.setTimePlayed(LocalStorage.timePlayed + 1);
   }
 
-  playBGMusic() {
+  playBGMusic() async {
     soundTrackPlayer.play(AssetSource('audio/soundtrack.mp3'));
     soundTrackPlayer.setReleaseMode(ReleaseMode.loop);
-    soundTrackPlayer.setVolume(bgVolume);
+    if (isFirstTimePlayBG) {
+      isFirstTimePlayBG = true;
+      await LocalStorage.setEffectVolume(musicVolume);
+    } else {
+      await LocalStorage.setEffectVolume(true);
+      musicVolume = true;
+    }
+
+    notifyListeners();
+  }
+
+  stopBGMusic() async {
+    print("stop bg");
+    await soundTrackPlayer.stop();
+    await LocalStorage.setEffectVolume(false);
+    musicVolume = false;
     notifyListeners();
   }
 }
