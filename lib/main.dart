@@ -13,7 +13,6 @@ void main() async {
   runApp(ChangeNotifierProvider(
       create: (_) => MainAppProvider(), child: const MyApp()));
 }
-// await player.setSourceAsset('audio/soundtrack.mp3');
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});

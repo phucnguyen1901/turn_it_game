@@ -9,7 +9,6 @@ import 'package:turn_it_game/screens/game_screen/actors/score.dart';
 class CircleBackground extends SpriteComponent {
   CircleBackground({super.size, super.position, super.anchor});
 
-  List<DangerousArea> currentList = [];
   int maxScoreNumber = 3;
   int currentScoreNumber = 1;
 
@@ -23,7 +22,7 @@ class CircleBackground extends SpriteComponent {
         position: size / 2,
         radius: size.x / 2 - 12));
 
-    createEnemiesAroundCircle(1);
+    createEnemiesAroundCircle(2);
     createScore();
   }
 
@@ -38,17 +37,17 @@ class CircleBackground extends SpriteComponent {
   }
 
   reCreateDangerousArea(double time) async {
-    for (var e in currentList) {
-      e.removeFromParent();
+    var dangerousList = children.query<DangerousArea>();
+    for (var dangerous in dangerousList) {
+      dangerous.removeFromParent();
     }
-    currentList.length = 0;
     await Future.delayed(const Duration(milliseconds: 300));
     createDangerousAreaFollowLevel(time);
   }
 
   createDangerousAreaFollowLevel(double time) {
     if (time < 10) {
-      createEnemiesAroundCircle(2);
+      createEnemiesAroundCircle(3);
     } else if (time > 10 && time < 20) {
       createEnemiesAroundCircle(5, numberCluster: 2);
     } else if (time > 20) {
@@ -59,9 +58,8 @@ class CircleBackground extends SpriteComponent {
   void createEnemiesAroundCircle(int numberDangerousArea,
       {int numberCluster = 0, bool isDangerousArea3 = false}) {
     final List<int> numbersList = List.generate(20, (index) => index + 1);
-    final Random random = Random();
     List<int> positions = [];
-    numbersList.shuffle(random);
+    numbersList.shuffle();
 
     for (var i = 1; i <= numberDangerousArea; i++) {
       positions.add(numbersList[i]);
@@ -78,7 +76,6 @@ class CircleBackground extends SpriteComponent {
 
       x += size.x / 2;
       y += size.y / 2;
-
       if (i > numberDangerousArea - numberCluster) {
         final dangerousAreaType = isDangerousArea3
             ? DangerousAreaType.tripple
@@ -86,11 +83,9 @@ class CircleBackground extends SpriteComponent {
         var cluster = DangerousArea(x, y, dangerousAreaType: dangerousAreaType)
           ..lookAt(size / 2);
         add(cluster);
-        currentList.add(cluster);
       } else {
         var dangerousArea = DangerousArea(x, y)..lookAt(size / 2);
         add(dangerousArea);
-        currentList.add(dangerousArea);
       }
     }
   }

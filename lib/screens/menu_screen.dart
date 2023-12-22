@@ -33,11 +33,12 @@ class _MenuScreenState extends State<MenuScreen> with WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
-    print("newState:$state");
-    if (state == AppLifecycleState.resumed) {
-      context.read<MainAppProvider>().playBGMusic();
-    } else if (state == AppLifecycleState.paused) {
-      soundTrackPlayer.stop();
+    if (context.read<MainAppProvider>().musicVolume) {
+      if (state == AppLifecycleState.resumed) {
+        context.read<MainAppProvider>().playBGMusic();
+      } else if (state == AppLifecycleState.paused) {
+        context.read<MainAppProvider>().stopBGMusic();
+      }
     }
   }
 

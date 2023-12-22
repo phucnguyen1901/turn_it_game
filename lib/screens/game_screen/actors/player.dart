@@ -57,18 +57,18 @@ class Player extends SpriteComponent
     }
     if (other is Score) {
       other.removeFromParent();
-      FlameAudio.play('collect.mp3',
-          volume:
-              Provider.of<MainAppProvider>(game.buildContext!, listen: false)
-                  .effectVolume);
+      if (Provider.of<MainAppProvider>(game.buildContext!, listen: false)
+          .effectVolume) {
+        FlameAudio.play('collect.mp3');
+      }
       game.circleBackground.createScore();
       Provider.of<MainAppProvider>(game.buildContext!, listen: false)
           .increaseScore();
     } else if (other is DangerousArea) {
-      FlameAudio.play('hit.mp3',
-          volume:
-              Provider.of<MainAppProvider>(game.buildContext!, listen: false)
-                  .effectVolume);
+      if (Provider.of<MainAppProvider>(game.buildContext!, listen: false)
+          .effectVolume) {
+        FlameAudio.play('hit.mp3');
+      }
       game.overlays.add('game-over');
       game.pauseEngine();
       Provider.of<MainAppProvider>(game.buildContext!, listen: false)
